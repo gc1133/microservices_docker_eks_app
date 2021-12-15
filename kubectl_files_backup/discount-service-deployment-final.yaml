@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: discount-service
+  name: discount-service
+spec:
+  replicas: 1
+  minReadySeconds: 45
+  selector:
+    matchLabels:
+      io.kompose.service: discount-service
+  template:
+    metadata:
+      labels:
+        io.kompose.network/mydockerapp-network: "true"
+        io.kompose.service: discount-service
+    spec:
+      containers:
+        - image: gc1133/docker_microservices_discount-service:0.1
+          name: discount-service
+          ports:
+            - containerPort: 8081
+      restartPolicy: Always
+      
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: C:\ProgramData\chocolatey\lib\kubernetes-kompose\tools\kompose.exe convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: discount-service
+  name: discount-service
+spec:
+  ports:
+    - name: "8081"
+      port: 8081
+      targetPort: 8081
+  selector:
+    io.kompose.service: discount-service
+status:
+  loadBalancer: {}

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: product-service
+  name: product-service
+spec:
+  replicas: 1
+  minReadySeconds: 45
+  selector:
+    matchLabels:
+      io.kompose.service: product-service
+  template:
+    metadata:
+      labels:
+        io.kompose.network/mydockerapp-network: "true"
+        io.kompose.service: product-service
+    spec:
+      containers:
+        - env:
+            - name: DISCOUNT_SERVICE_URL
+              value: http://discount-service:8081
+            - name: RDS_DBNAME
+              value: products-db
+            - name: RDS_HOSTNAME
+              value: mysql
+            - name: RDS_PASSWORD
+              value: password
+            - name: RDS_PORT
+              value: "3306"
+            - name: RDS_USERNAME
+              value: root
+          image: gc1133/docker_microservices_product-service:0.1
+          name: product-service
+          ports:
+            - containerPort: 8080
+      restartPolicy: Always

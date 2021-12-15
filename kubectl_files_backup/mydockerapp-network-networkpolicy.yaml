@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: mydockerapp-network
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              io.kompose.network/mydockerapp-network: "true"
+  podSelector:
+    matchLabels:
+      io.kompose.network/mydockerapp-network: "true"

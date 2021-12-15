@@ -1,0 +1,55 @@
+version: "3.7"
+
+services:
+
+  mysql:
+    image: mysql
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=products-db
+    networks:
+      - mydockerapp-network
+    volumes:
+      - mydockerapp-volume:/var/lib/mysql
+      
+  discount-service:
+    build:
+      context: ./discount-service
+      dockerfile: Dockerfile
+
+    restart: always
+    ports:
+      - "8081:8081"
+    networks:
+      - mydockerapp-network
+ 
+  product-service:
+ #   image: gc1133/product-service:0.0.1-SNAPSHOT
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on: 
+      - mysql
+      - discount-service
+    environment:
+      RDS_HOSTNAME: mysql
+      RDS_PORT: 3306
+      RDS_DBNAME: products-db
+      RDS_USERNAME: root
+      RDS_PASSWORD: password
+      DISCOUNT_SERVICE_URL: http://discount-service:8081
+    networks:
+      - mydockerapp-network 
+
+volumes:
+  mydockerapp-volume:
+  
+networks:
+  mydockerapp-network:

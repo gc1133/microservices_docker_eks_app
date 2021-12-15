@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: discount-service
+  name: discount-service
+spec:
+  replicas: 1
+  minReadySeconds: 45
+  selector:
+    matchLabels:
+      io.kompose.service: discount-service
+  template:
+    metadata:
+      labels:
+        io.kompose.network/mydockerapp-network: "true"
+        io.kompose.service: discount-service
+    spec:
+      containers:
+        - image: discount-service
+          name: discount-service
+          ports:
+            - containerPort: 8081
+      restartPolicy: Always
